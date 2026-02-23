@@ -14,8 +14,11 @@ import aster.core.lexicon.CanonicalizationConfig;
  *   <li>{@code 不等于} → {@code !=}</li>
  *   <li>{@code 等于} → {@code ==}</li>
  *   <li>{@code 则} (行尾) → {@code :}</li>
- *   <li>{@code 设置 X 为 Y} → {@code 令 X 为 Y.}</li>
+ *   <li>{@code 设置 X 为 Y} → {@code 令 X 为 Y}</li>
  * </ul>
+ * <p>
+ * 注意：不再自动添加句号。中文用户使用「。」作为语句终止符，
+ * {@link ChinesePunctuationTransformer} 已在更早阶段将其转换为「.」。
  */
 public final class ChineseOperatorTransformer implements SyntaxTransformer {
 
@@ -39,17 +42,9 @@ public final class ChineseOperatorTransformer implements SyntaxTransformer {
         s = s.replaceAll("\\s+\u5219\\s*$", ":");
         s = s.replaceAll("\\s+\u5219\\s*\\n", ":\n");
 
-        // "设置 X 为 Y" → "令 X 为 Y."
-        s = s.replaceAll("\u8BBE\u7F6E\\s+([^\u4E3A]+)\\s+\u4E3A\\s+(.+?)(?=\\n|$)",
-                "\u4EE4 $1 \u4E3A $2.");
-
-        // 为 "令 X 为 Y" 添加句号
-        s = s.replaceAll("\u4EE4\\s+(\\S+)\\s+\u4E3A\\s+(.+?)(?<![.\\(\\[\\{=,\\s])(?=\\s*(?:\\n|$))",
-                "\u4EE4 $1 \u4E3A $2.");
-
-        // 为 "返回 X" 添加句号
-        s = s.replaceAll("\u8FD4\u56DE\\s+(.+?)(?<![.\\(\\[\\{=,\\s])(?=\\s*(?:\\n|$))",
-                "\u8FD4\u56DE $1.");
+        // "设置 X 为 Y" → "令 X 为 Y"（不添加句号，由 ChinesePunctuationTransformer 处理）
+        s = s.replaceAll("\u8BBE\u7F6E\\s+([^\u4E3A]+)\\s+\u4E3A\\s+",
+                "\u4EE4 $1 \u4E3A ");
 
         return s;
     }
