@@ -59,6 +59,17 @@ public final class ZhCnPlugin implements LexiconPlugin, VocabularyPlugin {
         );
     }
 
+    @Override
+    public Map<String, String> getOverlayResources() {
+        return Map.of(
+                "typeInferenceRules", "overlays/type-inference-rules.json",
+                "inputGenerationRules", "overlays/input-generation-rules.json",
+                "diagnosticMessages", "overlays/diagnostic-messages.json",
+                "diagnosticHelp", "overlays/diagnostic-help.json",
+                "lspUiTexts", "overlays/lsp-ui-texts.json"
+        );
+    }
+
     private String loadResource(String path) {
         try (var is = getClass().getClassLoader().getResourceAsStream(path)) {
             if (is == null) {
