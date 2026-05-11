@@ -3,6 +3,7 @@ package aster.lang.zh;
 import aster.core.canonicalizer.TransformerRegistry;
 import aster.core.lexicon.Lexicon;
 import aster.core.lexicon.LexiconPlugin;
+import aster.core.lexicon.LexiconRegistry;
 import aster.core.lexicon.PunctuationConfig;
 import aster.core.lexicon.SemanticTokenKind;
 import org.junit.jupiter.api.BeforeAll;
@@ -86,28 +87,32 @@ class ZhCnPluginTest {
     }
 
     @Test
-    @DisplayName("6 个中文变换器已注册")
+    @DisplayName("7 个中文变换器已注册")
     void testTransformersRegistered() {
         Map<String, ?> transformers = plugin.getTransformers();
-        assertThat(transformers).hasSize(6);
+        assertThat(transformers).hasSize(7);
         assertThat(transformers).containsKeys(
                 "chinese-punctuation",
                 "chinese-possessive",
                 "chinese-operator",
                 "chinese-function-syntax",
                 "chinese-set-to",
-                "chinese-result-is"
+                "chinese-result-is",
+                "chinese-let-be"
         );
     }
 
     @Test
     @DisplayName("变换器可从 TransformerRegistry 获取")
     void testTransformersInRegistry() {
+        // 确保 LexiconRegistry 已初始化（会触发 SPI 注册变换器到 TransformerRegistry）
+        LexiconRegistry.getInstance();
         assertThat(TransformerRegistry.contains("chinese-punctuation")).isTrue();
         assertThat(TransformerRegistry.contains("chinese-possessive")).isTrue();
         assertThat(TransformerRegistry.contains("chinese-operator")).isTrue();
         assertThat(TransformerRegistry.contains("chinese-function-syntax")).isTrue();
         assertThat(TransformerRegistry.contains("chinese-set-to")).isTrue();
         assertThat(TransformerRegistry.contains("chinese-result-is")).isTrue();
+        assertThat(TransformerRegistry.contains("chinese-let-be")).isTrue();
     }
 }

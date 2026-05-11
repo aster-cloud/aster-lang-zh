@@ -72,8 +72,7 @@ class ZhCnCanonicalizerTest {
             String input = "令 变量 为 10";
             String result = zhCanonicalizer.canonicalize(input);
             assertTrue(result.contains("Let"), "中文'令'应翻译为'Let'");
-            // 注意："为" 同时映射到 BE("be") 和 WHEN("When")，
-            // 翻译结果取决于 HashMap 的遍历顺序。此处仅验证 "令" 的翻译。
+            assertTrue(result.contains("be"), "中文'令...为'中的'为'应翻译为'be'");
         }
 
         @Test
@@ -91,6 +90,26 @@ class ZhCnCanonicalizerTest {
             assertTrue(result.contains("\"若 这是字符串\""),
                     "字符串内的中文应保留，实际结果: " + result);
             assertTrue(result.contains("Return"), "'返回'应翻译为'Return'");
+        }
+    }
+
+    // ============================================================
+    // 令...为 与 若...为 歧义消解测试
+    // ============================================================
+
+    @Nested
+    @DisplayName("为 歧义消解")
+    class AmbiguityDisambiguationTests {
+
+        @Test
+        @DisplayName("令...为 + 若...为 混合使用时正确翻译")
+        void testLetBeAndMatchWhenCombined() {
+            String input = "令 额度 为 100。\n若 x：\n  为 1，返回 额度。\n  为 2，返回 200。\n";
+            String result = zhCanonicalizer.canonicalize(input);
+            assertTrue(result.contains("Let") && result.contains("be"),
+                    "'令...为'应翻译为'Let...be'，实际结果: " + result);
+            assertTrue(result.contains("When"),
+                    "'若...为'中的'为'应翻译为'When'，实际结果: " + result);
         }
     }
 

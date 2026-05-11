@@ -43,7 +43,8 @@ public final class ZhCnPlugin implements LexiconPlugin, VocabularyPlugin {
                 "chinese-operator", () -> ChineseOperatorTransformer.INSTANCE,
                 "chinese-function-syntax", () -> ChineseFunctionSyntaxTransformer.INSTANCE,
                 "chinese-set-to", () -> ChineseSetToTransformer.INSTANCE,
-                "chinese-result-is", () -> ChineseResultIsTransformer.INSTANCE
+                "chinese-result-is", () -> ChineseResultIsTransformer.INSTANCE,
+                "chinese-let-be", () -> ChineseLetBeTransformer.INSTANCE
         );
     }
 

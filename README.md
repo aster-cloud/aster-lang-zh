@@ -1,5 +1,7 @@
 # aster-lang-zh -- Aster CNL 中文语言包
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
 ## 概述
 
 提供简体中文（zh-CN）词法表、领域词汇和规范化规则。
