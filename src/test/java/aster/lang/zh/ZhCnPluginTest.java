@@ -115,4 +115,13 @@ class ZhCnPluginTest {
         assertThat(TransformerRegistry.contains("chinese-result-is")).isTrue();
         assertThat(TransformerRegistry.contains("chinese-let-be")).isTrue();
     }
+
+    @Test
+    @DisplayName("R7-Backend-4: providedLexiconIds 与 createLexicon().getId() 一致")
+    void testProvidedIdsMatchActualLexicon() {
+        ZhCnPlugin plugin = new ZhCnPlugin();
+        assertThat(plugin.providedLexiconIds())
+            .as("plugin metadata 必须与 createLexicon() 一致")
+            .containsExactly(plugin.createLexicon().getId());
+    }
 }

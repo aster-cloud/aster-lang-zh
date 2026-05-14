@@ -30,6 +30,11 @@ import java.util.function.Supplier;
 public final class ZhCnPlugin implements LexiconPlugin, VocabularyPlugin {
 
     @Override
+    public java.util.Set<String> providedLexiconIds() {
+        return java.util.Set.of("zh-CN");
+    }
+
+    @Override
     public Lexicon createLexicon() {
         String json = loadResource("lexicons/zh-CN.json");
         return DynamicLexicon.fromJsonString(json);
