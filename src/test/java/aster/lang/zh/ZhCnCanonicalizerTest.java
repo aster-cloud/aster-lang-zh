@@ -50,13 +50,14 @@ class ZhCnCanonicalizerTest {
 
         @Test
         void testChineseKeywordTranslation_Boolean() {
-            String input = "真 且 假 或 非";
+            // v2 关键字：真值/假值/或者/并且/不是
+            String input = "真值 并且 假值 或者 不是";
             String result = zhCanonicalizer.canonicalize(input);
-            assertTrue(result.contains("true"), "中文'真'应翻译为'true'");
-            assertTrue(result.contains("and"), "中文'且'应翻译为'and'");
-            assertTrue(result.contains("false"), "中文'假'应翻译为'false'");
-            assertTrue(result.contains("or"), "中文'或'应翻译为'or'");
-            assertTrue(result.contains("not"), "中文'非'应翻译为'not'");
+            assertTrue(result.contains("true"), "中文'真值'应翻译为'true'");
+            assertTrue(result.contains("and"), "中文'并且'应翻译为'and'");
+            assertTrue(result.contains("false"), "中文'假值'应翻译为'false'");
+            assertTrue(result.contains("or"), "中文'或者'应翻译为'or'");
+            assertTrue(result.contains("not"), "中文'不是'应翻译为'not'");
         }
 
         @Test
@@ -69,10 +70,11 @@ class ZhCnCanonicalizerTest {
 
         @Test
         void testChineseKeywordTranslation_Variable() {
-            String input = "令 变量 为 10";
+            // v2 关键字：'定义为' 替代 v1 的 '为'（BE）
+            String input = "令 变量 定义为 10";
             String result = zhCanonicalizer.canonicalize(input);
             assertTrue(result.contains("Let"), "中文'令'应翻译为'Let'");
-            assertTrue(result.contains("be"), "中文'令...为'中的'为'应翻译为'be'");
+            assertTrue(result.contains("be"), "中文'令...定义为'中的'定义为'应翻译为'be'");
         }
 
         @Test
@@ -85,9 +87,10 @@ class ZhCnCanonicalizerTest {
 
         @Test
         void testChineseKeywordTranslation_PreserveStrings() {
-            String input = "返回 \"若 这是字符串\"";
+            // 字符串内的 v1/v2 关键字字符（如'匹配于'）都应保留不变
+            String input = "返回 \"匹配于 这是字符串\"";
             String result = zhCanonicalizer.canonicalize(input);
-            assertTrue(result.contains("\"若 这是字符串\""),
+            assertTrue(result.contains("\"匹配于 这是字符串\""),
                     "字符串内的中文应保留，实际结果: " + result);
             assertTrue(result.contains("Return"), "'返回'应翻译为'Return'");
         }
@@ -102,14 +105,17 @@ class ZhCnCanonicalizerTest {
     class AmbiguityDisambiguationTests {
 
         @Test
-        @DisplayName("令...为 + 若...为 混合使用时正确翻译")
+        @DisplayName("令...定义为 + 匹配于...当 混合使用时正确翻译（v2 关键字）")
         void testLetBeAndMatchWhenCombined() {
-            String input = "令 额度 为 100。\n若 x：\n  为 1，返回 额度。\n  为 2，返回 200。\n";
+            // v2 关键字：BE='定义为'，MATCH='匹配于'，WHEN='当'
+            // 不再依赖原 v1 的单字 '为' 同义共享导致的歧义消解，
+            // 因此本测试结构上简化了
+            String input = "令 额度 定义为 100。\n匹配于 x：\n  当 1，返回 额度。\n  当 2，返回 200。\n";
             String result = zhCanonicalizer.canonicalize(input);
             assertTrue(result.contains("Let") && result.contains("be"),
-                    "'令...为'应翻译为'Let...be'，实际结果: " + result);
+                    "'令...定义为'应翻译为'Let...be'，实际结果: " + result);
             assertTrue(result.contains("When"),
-                    "'若...为'中的'为'应翻译为'When'，实际结果: " + result);
+                    "'匹配于...当'中的'当'应翻译为'When'，实际结果: " + result);
         }
     }
 
@@ -123,11 +129,14 @@ class ZhCnCanonicalizerTest {
 
         @Test
         void testChineseIdentifier_NotBreakByKeyword() {
-            String input = "令 若何 为 10";
+            // v2 关键字：MATCH 从 '若' 升级到 '匹配于'，标识符 '若何' 不再可能与
+            // MATCH 冲突。本测试现在验证 BE='定义为' 与标识符的边界。
+            String input = "令 若何 定义为 10";
             String result = zhCanonicalizer.canonicalize(input);
             assertTrue(result.contains("若何"),
-                    "标识符'若何'不应被关键词'若'替换破坏，实际结果: " + result);
+                    "标识符'若何'应保留，实际结果: " + result);
             assertTrue(result.contains("Let"), "'令'应翻译为'Let'");
+            assertTrue(result.contains("be"), "'定义为'应翻译为'be'");
         }
 
         @Test
@@ -141,12 +150,13 @@ class ZhCnCanonicalizerTest {
 
         @Test
         void testChineseIdentifier_MultipleKeywordsInIdentifier() {
-            String input = "令 返回值 为 若干";
+            // v2 关键字下，'若干' 不再与 MATCH（v2='匹配于'）冲突
+            String input = "令 返回值 定义为 若干";
             String result = zhCanonicalizer.canonicalize(input);
             assertTrue(result.contains("返回值"),
                     "标识符'返回值'不应被'返回'关键词破坏，实际结果: " + result);
             assertTrue(result.contains("若干"),
-                    "标识符'若干'不应被'若'关键词破坏");
+                    "标识符'若干'应保留（v2 下 MATCH 已升级为'匹配于'）");
         }
 
         @Test

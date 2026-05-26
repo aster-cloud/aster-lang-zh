@@ -70,7 +70,10 @@ class ZhCnPluginTest {
         Map<SemanticTokenKind, String> kw = lexicon.getKeywords();
         assertThat(kw.get(SemanticTokenKind.IF)).contains("如果");
         assertThat(kw.get(SemanticTokenKind.RETURN)).contains("返回");
-        assertThat(kw.get(SemanticTokenKind.TRUE)).contains("真");
+        // v2 关键字：TRUE='真值'、MATCH='匹配于'、BE='定义为'
+        assertThat(kw.get(SemanticTokenKind.TRUE)).isEqualTo("真值");
+        assertThat(kw.get(SemanticTokenKind.MATCH)).isEqualTo("匹配于");
+        assertThat(kw.get(SemanticTokenKind.BE)).isEqualTo("定义为");
         assertThat(kw.get(SemanticTokenKind.MODULE_DECL)).contains("模块");
         assertThat(kw.get(SemanticTokenKind.LET)).contains("令");
     }
