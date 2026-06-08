@@ -56,10 +56,14 @@ tasks.register("verifyLexiconKeywordParity") {
     description = "Ensure zh-CN.json keyword set matches en-US backbone"
 
     val ours = file("src/main/resources/lexicons/zh-CN.json")
+    // backbone 是可选的 sibling 文件（非 monorepo CI 下 ../aster-lang-core 不存在）。
+    // 用 inputs.files(...).optional() 而非 inputs.file()——后者会在 task 执行前强制
+    // 校验文件存在，导致下方 exists() 的 skip 逻辑永远到不了（CI 把 core checkout 到
+    // 嵌套目录而非 sibling 时直接配置失败）。
     val backbone = file("../aster-lang-core/src/main/resources/builtin/en-US.json")
 
     inputs.file(ours)
-    inputs.file(backbone)
+    inputs.files(backbone).optional()
 
     doLast {
         if (!backbone.exists()) {
