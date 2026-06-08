@@ -94,6 +94,16 @@ class ZhCnCanonicalizerTest {
                     "字符串内的中文应保留，实际结果: " + result);
             assertTrue(result.contains("Return"), "'返回'应翻译为'Return'");
         }
+
+        @Test
+        @DisplayName("跨模块钉版本：引用/版本/作为 翻译为 use/version/as（ADR 0015）")
+        void testChineseKeywordTranslation_ImportVersion() {
+            // 引用 X 版本 N 作为 Y → use X version N as Y（Java grammar 可解析形式）
+            String result = zhCanonicalizer.canonicalize("引用 risk.Scoring 版本 2 作为 Score。");
+            assertTrue(result.contains("use"), "'引用'应翻译为'use'，实际: " + result);
+            assertTrue(result.contains("version 2"), "'版本 2'应翻译为'version 2'，实际: " + result);
+            assertTrue(result.contains("as Score"), "'作为 Score'应翻译为'as Score'，实际: " + result);
+        }
     }
 
     // ============================================================
