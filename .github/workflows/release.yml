@@ -25,6 +25,14 @@ jobs:
           path: aster-lang-en
           token: ${{ secrets.CROSS_REPO_TOKEN }}
 
+      # 共享版本目录（aster-lang-platform，ADR 0012）—— core/en settings 依赖它，
+      # 必须先发布到 Maven Local，否则 core/en 构建解析不到 asterLibs。
+      - uses: actions/checkout@v6
+        with:
+          repository: aster-cloud/aster-lang-platform
+          path: aster-lang-platform
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
+
       - uses: actions/setup-java@v5
         with:
           java-version: '25'
@@ -33,7 +41,8 @@ jobs:
 
       - name: Publish dependencies to Maven Local
         run: |
-          cd aster-lang-core && ./gradlew publishToMavenLocal -x test
+          cd aster-lang-platform && ./gradlew publishToMavenLocal
+          cd ../aster-lang-core && ./gradlew publishToMavenLocal -x test
           cd ../aster-lang-en && ./gradlew publishToMavenLocal -x test
 
       - name: Build & Test
